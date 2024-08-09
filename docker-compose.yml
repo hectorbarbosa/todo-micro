@@ -1,0 +1,57 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    volumes:
+      - /var/lib/rabbitmq
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    env_file:
+      - .env
+
+  auth:
+    container_name: todo-auth
+    build:
+      context: ./
+      dockerfile: ./apps/auth/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - rabbitmq
+      - postgres 
+    volumes:
+      - .:/usr/src/app # any change to base folder should be reflected
+      - /usr/src/app/node_modules
+    command: npm run start:dev auth # overrides CMD from dockerfile
+
+  todo:
+    container_name: todo-app 
+    build:
+      context: ./
+      dockerfile: ./apps/todo-micro/Dockerfile
+    ports:
+      - '5000:5000'
+    env_file:
+      - .env
+    depends_on:
+      - rabbitmq
+      - postgres 
+      - auth
+    volumes:
+      - .:/usr/src/app # any change to base folder should be reflected
+      - /usr/src/app/node_modules
+    command: npm run start:dev todo-micro
+  
+  postgres:
+    container_name: postgres 
+    image: postgres
+    env_file:
+      - .env
+    ports:
+      - '2345:5432'
+    volumes:
+      - ./data:/docker/entry-point-initdb.d
+      - db_data:/var/lib/postgresql/data
+volumes:
+  db_data:

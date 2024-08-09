@@ -1,0 +1,3 @@
+CREATE DATABASE IF NOT EXISTS 'todo_micro'
+  WITH OWNER = postgres
+  ENCODING = 'UTF8';
