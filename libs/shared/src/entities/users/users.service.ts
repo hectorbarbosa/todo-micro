@@ -1,5 +1,7 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserEntity } from './users.entity';
+import { ProjectEntity } from 'shared/shared';
+import { ProjectsService } from 'shared/shared';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DataSource } from 'typeorm';
@@ -7,9 +9,11 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class UsersService {
   private userRepository;
+  private projectRepository;
 
   constructor(private dataSource: DataSource) {
     this.userRepository = this.dataSource.getRepository(UserEntity);
+    this.projectRepository = this.dataSource.getRepository(ProjectEntity);
   }
 
   async createUser(dto: CreateUserDto): Promise<UserEntity> {
@@ -32,6 +36,8 @@ export class UsersService {
 
   async findAll(): Promise<UserEntity[]> {
     const users = await this.userRepository.find();
+    users.forEach(function(u){ delete u.password });
+
     return users;
   }
 
@@ -50,19 +56,21 @@ export class UsersService {
     let exists = await this.userRepository.exists({
       where: { id: id },
     });
+    // console.log(exists)
     if (!exists) {
       throw new HttpException('error deleting user', HttpStatus.NOT_FOUND);
     }
-    try {
-      const result = await this.userRepository.delete(id);
-      if (!result) {
-        return false;
-      }
-      return true;
-    } catch (error) {
-      console.log(error.message);
-      throw new HttpException('user has projects', HttpStatus.BAD_REQUEST);
+    const hasStuff = await this.projectRepository
+      .createQueryBuilder('project')
+      .where('project."userId" = :id', { id })
+      .getCount();
+    // console.log('projects count:', hasStuff);
+    if (hasStuff > 0) {
+      const errors = 'User has projects. Delete all stuff first.'
+      throw new BadRequestException(errors);
     }
+    const result = await this.userRepository.delete(id);
+    return result ? true : false;
   }
 
   async findUserById(id: number): Promise<UserEntity> {

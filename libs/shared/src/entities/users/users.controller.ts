@@ -10,6 +10,7 @@ import {
   Req,
   UnauthorizedException,
   HttpException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -56,7 +57,7 @@ export class UsersController {
     @Param() params,
     @Body() dto: UpdateUserDto,
   ) {
-    if (request['user'].id !== parseInt(params.id)) {
+    if (request['user']['id'] !== parseInt(params.id)) {
       throw new UnauthorizedException();
     }
     return await this.usersService.updateUser(params.id, dto);
@@ -67,9 +68,12 @@ export class UsersController {
   @ApiParam({ name: 'id', required: true })
   @UseGuards(AuthGuard)
   @Delete('/:id')
+  @ApiBearerAuth('JWT-auth')
   async delete(@Req() request: Request, @Param() params) {
-    if (request['user'].id !== parseInt(params.id)) {
-      throw new UnauthorizedException();
+    // console.log('request id:', request['user']['id'], typeof(request['user']['id']))
+    // console.log('params id:', params.id, typeof(params.id))
+    if (request['user']['id'] !== parseInt(params.id)) {
+      throw new ForbiddenException();
     }
     return await this.usersService.deleteUser(params.id);
   }
@@ -81,8 +85,8 @@ export class UsersController {
   @Get('/:id')
   @ApiBearerAuth('JWT-auth')
   async findUserById(@Req() request: Request, @Param() params) {
-    if (request['user'].id !== parseInt(params.id)) {
-      throw new UnauthorizedException();
+    if (request['user']['id'] !== parseInt(params.id)) {
+      throw new ForbiddenException();
     }
     const user = await this.usersService.findUserById(params.id);
     return user;

@@ -53,8 +53,8 @@ export class ProjectsController {
 
   @ApiOperation({ summary: 'Отредактировать проект по id' })
   @ApiResponse({ status: 200, type: ProjectEntity })
-  @UseGuards(ProjectAuthGuard)
   @ApiParam({ name: 'id', required: true })
+  @UseGuards(ProjectAuthGuard)
   @Put('/:id')
   @ApiBearerAuth('JWT-auth')
   async update(@Param() params, @Body() dto: UpdateProjectDto) {

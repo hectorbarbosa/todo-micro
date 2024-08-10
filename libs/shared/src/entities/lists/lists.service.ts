@@ -1,6 +1,6 @@
 import { HttpException, Injectable, HttpStatus } from '@nestjs/common';
 import { ListEntity } from './lists.entity';
-import { ProjectEntity } from 'shared/shared/entities/projects/projects.entity';
+import { ProjectEntity } from 'shared/shared';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
 import { DragListDto } from './dto/drag-list.dto';

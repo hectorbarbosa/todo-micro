@@ -83,7 +83,8 @@ export class TasksController {
 
   @ApiOperation({ summary: 'Перетаскивание задачи' })
   @ApiResponse({ status: 200, type: TaskEntity })
-  @ApiParam({ name: 'id', required: true })
+  @ApiParam({ name: 'listId', required: true })
+  @ApiParam({ name: 'taskId', required: true })
   @UseGuards(DragTaskAuthGuard)
   @Patch('/drag/:listId/:taskId')
   @ApiBearerAuth('JWT-auth')

@@ -1,19 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectEntity } from './projects.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { Repository, DataSource } from 'typeorm';
-import { UserEntity } from 'shared/shared/entities/users/users.entity';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class ProjectsService {
   private projectRepository;
-  private userRepository;
 
   constructor(private dataSource: DataSource) {
     this.projectRepository = this.dataSource.getRepository(ProjectEntity);
-    this.userRepository = this.dataSource.getRepository(UserEntity);
+    // this.userRepository = this.dataSource.getRepository(UserEntity);
   }
 
   async createProject(userId: number, dto: CreateProjectDto) {
@@ -47,7 +44,7 @@ export class ProjectsService {
   async findAll(userId: number): Promise<ProjectEntity[]> {
     const projects = await this.projectRepository
       .createQueryBuilder('project')
-      .where('project.userId = :id', { id: userId })
+      .where('project."userId" = :id', { id: userId })
       .getMany();
     return projects;
   }
@@ -133,4 +130,5 @@ export class ProjectsService {
       );
     }
   }
+
 }
