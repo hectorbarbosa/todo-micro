@@ -7,9 +7,11 @@ import {
   UseFilters,
 } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
-import { HttpExceptionFilter } from 'shared/shared';
 import { catchError, throwError } from 'rxjs';
+import { CreateUserDto } from './dto/create-user.dto'; 
+import { SignInUserDto } from './dto/sign-in-user.dto'; 
 
+@ApiTags('Регистрация и аутентификация')
 @Controller()
 export class AppController {
   constructor(
@@ -19,38 +21,26 @@ export class AppController {
   @ApiOperation({ summary: "Регистрация" })
   @ApiResponse({ status: 201, description: "Пользовательский токен" })
   @Post('auth/register')
-  async register(
-    @Body('name') name: string,
-    @Body('email') email: string,
-    @Body('password') password: string,
-  ) {
+  async register(@Body() userDto: CreateUserDto) {
     return this.authService.send(
       {
         cmd: 'register',
       },
-      {
-        name,
-        email,
-        password,
-      })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      userDto
+    )
+    .pipe(catchError(error => throwError(() => new RpcException(error.response))))
   }
   
   @ApiOperation({ summary: "Аутентификация" })
   @ApiResponse({ status: 200, description: "Пользовательский токен" })
   @Post('auth/login')
-  async login(
-    @Body('email') email: string,
-    @Body('password') password: string,
-  ) {
+  async login(@Body() userDto: SignInUserDto) {
     return this.authService.send(
       {
         cmd: 'login',
       },
-      {
-        email,
-        password,
-      })
+      userDto
+    )
     .pipe(catchError(error => throwError(() => new RpcException(error.response))))
   }
 }

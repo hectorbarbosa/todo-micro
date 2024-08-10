@@ -113,15 +113,13 @@ export class ListsService {
         newOrderNumber,
       );
       if (!bulkUpdated) {
-        console.log('no order numbers to update');
-        // throw new HttpException('no rows to update', HttpStatus.BAD_REQUEST);
+        console.warn('no order numbers to update');
       }
 
       // set order_number for dragged list with lists.id = listId
       const updated = await this.setOneOrderNumber(listId, newOrderNumber);
       if (!updated) {
-        console.log('new order number was not set');
-        // throw new HttpException("new order number was not set", HttpStatus.BAD_REQUEST);
+        console.warn('new order number was not set');
       }
 
       return true;

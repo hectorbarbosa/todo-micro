@@ -42,6 +42,7 @@ export class ListsController {
 
   @ApiOperation({ summary: 'Получить все списки задач по проекту' })
   @ApiResponse({ status: 200, type: [ListEntity] })
+  @ApiParam({ name: 'id', required: true, description: 'id Проекта'})
   @UseGuards(ProjectAuthGuard)
   @Get('all/:id')
   @ApiBearerAuth('JWT-auth')

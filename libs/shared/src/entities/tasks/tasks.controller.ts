@@ -42,6 +42,7 @@ export class TasksController {
 
   @ApiOperation({ summary: 'Получить все задачи из списка' })
   @ApiResponse({ status: 200, type: [TaskEntity] })
+  @ApiParam({ name: 'id', required: true, description: 'id Списка'})
   @UseGuards(ListAuthGuard)
   @Get('/all/:id')
   @ApiBearerAuth('JWT-auth')

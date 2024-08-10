@@ -8,7 +8,6 @@ import {
   Param,
   UseGuards,
   Req,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -33,20 +32,23 @@ export class ProjectsController {
   @ApiOperation({ summary: 'Добавить проект' })
   @ApiResponse({ status: 201, type: ProjectEntity })
   @UseGuards(AuthGuard)
-  @ApiParam({ name: 'id', required: true })
-  @Post('/:id')
+  @Post()
   @ApiBearerAuth('JWT-auth')
-  async create(@Param() params, @Body() projectDto: CreateProjectDto) {
-    return await this.projectsService.createProject(params.id, projectDto);
+  async create(
+    @Req() request: Request,
+    @Body() projectDto: CreateProjectDto
+  ) {
+    // console.log(request['user']) 
+    return await this.projectsService.createProject(request['user']['id'], projectDto);
   }
 
   @ApiOperation({ summary: 'Получить все проекты пользователя' })
   @ApiResponse({ status: 200, type: [ProjectEntity] })
   @UseGuards(AuthGuard)
-  @Get('/all/:id')
+  @Get('/all')
   @ApiBearerAuth('JWT-auth')
-  async getAll(@Param() params) {
-    return await this.projectsService.findAll(params.id);
+  async getAll(@Req() request: Request) {
+    return await this.projectsService.findAll(request['user']['id']);
   }
 
   @ApiOperation({ summary: 'Отредактировать проект по id' })
@@ -81,6 +83,7 @@ export class ProjectsController {
 
   @ApiOperation({ summary: 'Получить проект с вложениями' })
   @ApiResponse({ status: 200, type: ProjectEntity })
+  @ApiParam({ name: 'id', required: true })
   @UseGuards(ProjectAuthGuard)
   @Get('/complete/:id')
   @ApiBearerAuth('JWT-auth')
