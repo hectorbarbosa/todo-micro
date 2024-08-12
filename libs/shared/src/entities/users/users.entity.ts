@@ -22,8 +22,6 @@ export class UserEntity {
   @Column({ type: 'varchar', nullable: false })
   password: string;
 
-  @OneToMany(() => ProjectEntity, (p) => p.user, {
-    lazy: true,
-  })
+  @OneToMany(() => ProjectEntity, (p) => p.user)
   ps: ProjectEntity[];
 }

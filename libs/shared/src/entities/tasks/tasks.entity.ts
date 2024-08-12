@@ -30,7 +30,6 @@ export class TaskEntity {
   @ApiProperty({ example: '10', description: 'Уникальный id' })
   @ApiProperty({ type: () => ListEntity })
   @ManyToOne(() => ListEntity, (list) => list.ts, {
-    lazy: true,
     onDelete: 'CASCADE',
   })
   list: ListEntity;

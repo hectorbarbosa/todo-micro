@@ -8,13 +8,6 @@ import {
 } from 'typeorm';
 import { UserEntity } from 'shared/shared/entities/users/users.entity';
 import { ListEntity } from 'shared/shared/entities/lists/lists.entity';
-// import { IsNotEmpty } from 'class-validator';
-
-interface projectCreationAttrs {
-  email: string;
-  name: string;
-  password: string;
-}
 
 @Entity('projects')
 export class ProjectEntity {
@@ -40,7 +33,5 @@ export class ProjectEntity {
   user: UserEntity;
 
   @OneToMany(() => ListEntity, (list) => list.project)
-  // eager: true,
-  // })
   ls: ListEntity[];
 }

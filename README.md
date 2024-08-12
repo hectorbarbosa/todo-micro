@@ -17,4 +17,7 @@ $ docker compose up postgres rabbitmq -d
 # start auth microservice and gateway application
 $ docker compose up auth todo 
 
+# default swagger documentation page
+http://localhost:5000/docs#/
+
 ```
