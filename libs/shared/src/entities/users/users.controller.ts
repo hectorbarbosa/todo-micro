@@ -63,19 +63,15 @@ export class UsersController {
     return await this.usersService.updateUser(params.id, dto);
   }
 
-  @ApiOperation({ summary: 'delete user by id' })
+  @ApiOperation({ summary: 'Удаление текущего пользователя (сначала удалите каскадно его проекты)' })
   @ApiResponse({ status: 200, type: UserEntity })
-  @ApiParam({ name: 'id', required: true })
   @UseGuards(AuthGuard)
-  @Delete('/:id')
+  @Delete()
   @ApiBearerAuth('JWT-auth')
-  async delete(@Req() request: Request, @Param() params) {
+  async delete(@Req() request: Request) {
     // console.log('request id:', request['user']['id'], typeof(request['user']['id']))
     // console.log('params id:', params.id, typeof(params.id))
-    if (request['user']['id'] !== parseInt(params.id)) {
-      throw new ForbiddenException();
-    }
-    return await this.usersService.deleteUser(params.id);
+    return await this.usersService.deleteUser(request['user']['id']);
   }
 
   @ApiOperation({ summary: 'get user by id' })
